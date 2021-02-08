@@ -1,0 +1,119 @@
+---
+title: "Boston_Housing"
+output: html_document
+---
+```{r}
+library(caret)
+library(spData)
+library(mlbench)
+library(corrplot)
+library(MASS)
+```
+
+
+```{r}
+boston <- Boston
+
+
+
+colnames(boston)
+
+```
+
+
+```{r}
+corrplot(cor(boston))
+
+```
+
+```{r}
+sum(is.na(boston))
+```
+
+```{r}
+summary(boston$crim)
+
+```
+
+
+```{r}
+
+require(ggplot2)
+require(plotly)
+plot_ly(data = Boston, x = ~lstat, y = ~crim)
+
+```
+
+```{r}
+fig <- plot_ly(boston, x = ~boston$medv) 
+#fig <- fig %>% add_trace(y = ~boston$lstat, name = 'Low Staus',mode = 'markers') 
+fig <- fig %>% add_trace(y = ~(boston$crim), name = 'prices', mode = 'markers') 
+
+fig
+
+```
+
+```{r}
+plot_ly(data = Boston, x = ~lstat, y = ~medv)
+
+```
+```{r}
+plot_ly(data = Boston, x = ~medv, y = ~indus,mode='markers')
+
+```
+```{r}
+hcrim<-subset(boston, boston$crim>quantile(boston$crim, .90))
+sum(boston$crim>quantile(boston$crim, .90))
+
+
+```
+```{r}
+summary(hcrim)
+
+```
+```{r}
+plot_ly(data=boston, y = ~lstat, name = "Boston", type="box")  %>%
+  add_boxplot(data=hcrim, y= ~lstat, name = "Area with 90th percentile crime rate", type="box")
+
+```
+```{r}
+
+plot_ly(data=Boston, y = ~medv, name = "Boston", type="box")  %>%
+  add_boxplot(data=hcrim, y= ~medv, name = "Area with 90th percentile lstat", type="box")
+
+```
+```{r}
+
+plot_ly(data = boston, x = ~lstat, y = ~age)
+
+
+```
+
+```{r}
+plot_ly(data= boston,x = ~lstat , type = 'histogram')
+
+```
+
+```{r}
+
+plot_ly(data=boston, y = ~medv, name = "Boston", type="box")  %>%
+  add_boxplot(data=boston, y= ~lstat, name = "median prices at low status counties", type="box")
+
+
+```
+```{r}
+smp_size<-floor(0.75*nrow(boston))
+set.seed(12)
+train_ind<-sample(seq_len(nrow(boston)), size=smp_size)
+train<-boston[train_ind, ]
+test<-boston[-train_ind, ]
+
+```
+
+
+```{r}
+lm.fit=lm(medv~.,data=train)
+
+summary(lm.fit)
+
+```
